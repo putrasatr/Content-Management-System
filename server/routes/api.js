@@ -1,41 +1,44 @@
-// import jwt_decode from "jwt-decode";
-const jwt_decode = require('jwt-decode');
 var express = require('express');
 var router = express.Router();
 var jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
+const myPlaintextPassword = 's0/\/\P4$$w0rD';
+const someOtherPlaintextPassword = 'not_bacon';
+
 var Users = require('../models/users')
-var Letters = require('../models/letters')
-var Datadates = require('../models/datadates')
-var Maps = require('../models/maps');
+var Datas = require('../models/datas')
+var DataDates = require('../models/dataDates')
+var Maps = require('../models/maps')
 
-// ----------------------------CHALLENGE 30----------------------------
-router.get('/users', function (req, res) {
-    res.json({
-        data: 'Test'
-    })
-});
-
+/* GET home page. */
 router.post('/users/register', function (req, res, next) {
-    var { email, password, retypepassword } = req.body;
+    var { id, email, password, retypepassword } = req.body;
 
     const token = jwt.sign({ email }, 'my_secret_key');
 
     Users.findOne({ email: email }, function (err, data) {
         if (err) return handleError(err);
         if (data) {
-            res.status(201).json({message:'Email already exists'})
+            res.status(200).json({
+                msg: 'Email already exists'
+            })
         } else {
             if (password === retypepassword) {
-                Users.create({ email, password, token }, function (err, data) {
-                    res.status(201).json({
-                        data: {
-                            email: data.email
-                        },
-                        token: data.token
+                bcrypt.hash(password, saltRounds, function (err, hash) {
+                    Users.create({ id, email, password: hash, token }, function (err, data) {
+                        res.status(201).json({
+                            data: {
+                                email: data.email
+                            },
+                            token: data.token
+                        })
                     })
-                })
+                });
             } else {
-                res.status(201).json({message:"Password not match"})
+                res.status(200).json({
+                    msg: "Password not match"
+                })
             }
         }
     })
@@ -43,361 +46,221 @@ router.post('/users/register', function (req, res, next) {
 
 router.post('/users/login', function (req, res, next) {
     var { email, password } = req.body;
-    // const token = jwt.sign({ email }, 'my_secret_key');
 
-    Users.findOne({ email: email }, function (err, data) {
-        if (err) return handleError(err);
-        if (data) {
-            if (data.password === password) {
-                jwt.sign({ email }, 'secretkey', (err, token) => {
-                    Users.updateMany({ email: email }, { $set: { token: token } }, function (err, response) {
-
-                        res.status(201).json({
-                            data: {
-                                email: data.email
-                            },
-                            token: token
-                        })
+    Users.findOne({ email }, function (err, data) {
+        if (!data) {
+            return res.status(200).json({
+                msg: false
+            })
+        }
+        bcrypt.compare(password, data.password, function (err, result) {
+            if (result) {
+                const token = jwt.sign({ email }, 'my_secret_key');
+                Users.updateMany({ email }, { $set: { token: token } }, function (err, response) {
+                    res.status(201).json({
+                        data: {
+                            email: data.email
+                        },
+                        token: data.token,
+                        msg: true
                     })
                 })
             } else {
-                res.status(201).json({
-                    msg: "Password not match"
+                res.json({
+                    msg: false
                 })
             }
-        } else {
-            res.json({
-                msg: "Email not exists"
-            })
-        }
+        });
+
     })
 })
 
-router.post('/users/check', verifyToken, function (req, res, next) {
-    const token = req.token;
-    try {
-        let data = jwt_decode(token);
-        if (data) {
-            Users.findOne({ email: data.email }, (err, user) => {
-                if (!user) {
-                    res.status(201).json({ "valid": false })
-                } else {
-                    res.status(201).json({ "valid": true })
-                }
-            });
-        } else {
-            res.status(201).json({ "valid": false })
-        }
+router.post('/checkdata', verifyToken, function (req, res, next) {
+    var { letter } = req.body;
 
-    } catch (e) {
-    res.status(201).json({ "msg": false, "valid": false })
-    }
+    Datas.exists({ letter }, (err, data) => {
+        res.status(200).json(data)
+    })
+
 });
 
+router.post('/data', verifyToken, function (req, res, next) {
+    var { id, letter, frequency } = req.body;
 
-router.get('/users/destroy', verifyToken, function (req, res, next) {
-    var token = req.headers['token']
-    try {
-        res.clearCookie(token);
-        res.json({
-            msg: req.token
-        })
-    } catch (error) {
-        res.status(500).send(error)
-    }
-})
-
-
-// ----------------------------CHALLENGE 31----------------------------
-router.post('/data', function (req, res, next) {
-    var { letter, frequency } = req.body;
-    Letters.create({ letter, frequency }, function (err, response) {
-        if (err) res.sendStatus(403)
-        res.status(201).send({
+    Datas.create({ id, letter, frequency }, (err, data) => {
+        res.status(201).json({
             success: true,
             message: "data have been added",
-            data: {
-                _id: response.id,
-                letter: response.letter,
-                frequency: response.frequency
-            }
+            data: data
         })
     })
-})
 
-router.post('/data/search', function (req, res, next) {
-    var { letter, frequency } = req.body;
-    Letters.find({ $or: [{ letter, frequency }, { letter }, { frequency }] }, function (err, response) {
-        if (err) res.sendStatus(403)
-        if (response.length > 0) {
-            res.status(201).send({
-                data: response
-            })
-        } else {
-            res.status(201).send({
-                success: false,
-                msg: "Result Not Found"
-            })
-        }
-    })
-})
+});
 
-router.get('/data', function (req, res) {
-    Letters.find({}, function (err, data) {
-        res.status(201).json({
-            data,
-            message: 'success'
-
-        })
-    });
-})
-
-router.put('/data/:id', (req, res) => {
-    var id = req.params.id
-    Letters.findOneAndUpdate({ _id: id },
-        {
-            letter: req.body.letter,
-            frequency: req.body.frequency
-        }, { new: true }, function (err, data) {
-            if (err) res.sendStatus(403)
-            res.status(201).json({
+router.get('/data', verifyToken, function (req, res, next) {
+    Datas.find(
+        {})
+        // .limit(3)
+        // .sort({ 'id': -1 })
+        .exec(function (err, data) {
+            res.status(200).json({
                 data
             })
         })
+
 })
 
-router.delete('/data/:id', (req, res) => {
-    var id = req.params.id
-    Letters.findOneAndDelete({ _id: id }, function (err, data) {
-        if (err) res.sendStatus(403)
+router.put('/data/:id', verifyToken, function (req, res, next) {
+    var _id = req.params.id
+    var { letter, frequency } = req.body
+    Datas.findByIdAndUpdate(_id, { letter, frequency }, { new: true }, (err, data) => {
         res.status(201).json({
-            message: "success"
+            success: true,
+            message: "data have been updated",
+            data: data
         })
     })
+
 })
 
-router.get("/data/:id", (req, res) => {
-    let id = req.params.id
-    Letters.findById({ _id: id }, function (err, data) {
-        if (data) {
-            res.json({
-                success: true,
-                message: "data found",
-                data
-            })
-        } else {
-            res.status(201).json({
-                success: false,
-                message: "data not found"
-            })
-        }
-    })
-})
-
-// ----------------------------CHALLENGE 32----------------------------
-
-//Browse
-router.post('/datadate/search', function (req, res, next) {
-    var { letter, frequency } = req.body;
-    Datadates.find({ $or: [{ letter, frequency }, { letter }, { frequency }] }, function (err, response) {
-        if (err) res.sendStatus(403)
-        if (response.length > 0) {
-            res.send({
-                data: response
-            })
-        } else {
-            res.status(201).send({
-                success: false,
-                msg: "Result Not Found"
-            })
-        }
-    })
-})
-
-//Read
-router.get('/datadate', function (req, res) {
-    Datadates.find({}, function (err, data) {
+router.delete('/data/:id', verifyToken, function (req, res, next) {
+    var _id = req.params.id
+    Datas.findByIdAndRemove(_id, (err, data) => {
         res.status(201).json({
-            data,
-            message: 'success'
-
+            success: true,
+            message: "data have been deleted",
+            data: data
         })
-    });
+    })
+
 })
 
-//Edit
-router.put('/datadate/:id', (req, res) => {
-    var id = req.params.id
-    Datadates.findOneAndUpdate({ _id: id },
-        {
-            letter: req.body.letter,
-            frequency: req.body.frequency
-        }, { new: true }, function (err, data) {
-            if (err) res.sendStatus(403)
-            res.status(201).json({
-                data
-            })
-        })
-})
+router.post('/dataDate', verifyToken, function (req, res, next) {
+    var { id, letter, frequency } = req.body;
 
-//Add
-router.post('/datadate', function (req, res, next) {
-    var { letter, frequency } = req.body;
-    Datadates.create({ letter, frequency }, function (err, response) {
-        if (err) res.sendStatus(403)
-        res.status(201).send({
+    DataDates.create({ id, letter, frequency }, (err, data) => {
+        res.status(201).json({
             success: true,
             message: "data have been added",
-            data: {
-                _id: response.id,
-                letter: response.letter,
-                frequency: response.frequency
-            }
+            data: data
         })
     })
-})
 
+});
 
-//Delete
-router.delete('/datadate/:id', (req, res) => {
-    var id = req.params.id
-    Datadates.findOneAndDelete({ _id: id }, function (err, data) {
-        if (err) res.sendStatus(403)
-        res.status(201).json({
-            message: "success"
-        })
-    })
-})
-
-//Find
-router.get("/datadate/:id", (req, res) => {
-    let id = req.params.id
-    Datadates.findById({ _id: id }, function (err, data) {
-        if (data) {
-            res.json({
-                success: true,
-                message: "data found",
+router.get('/dataDate', verifyToken, function (req, res, next) {
+    DataDates.find(
+        {})
+        // .limit(3)
+        // .sort({ 'id': -1 })
+        .exec(function (err, data) {
+            res.status(200).json({
                 data
             })
-        } else {
-            res.status(201).json({
-                success: false,
-                message: "data not found"
-            })
-        }
-    })
-})
-// ----------------------------CHALLENGE 33----------------------------
+        })
 
-//Add
-router.post('/maps', function (req, res, next) {
-    var { title,lang,lat } = req.body;
-    Maps.create({ title, lat, lang }, function (err, response) {
-        if (err) res.sendStatus(403)
-        res.status(201).send({
+})
+
+router.put('/dataDate/:id', verifyToken, function (req, res, next) {
+    var _id = req.params.id
+    var { letter, frequency } = req.body
+    DataDates.findByIdAndUpdate(_id, { letter, frequency }, { new: true }, (err, data) => {
+        res.status(201).json({
             success: true,
-            message: "data have been added",
-            data: {
-                _id: response.id,
-                title:response.title,
-                lat: response.lat,
-                lang: response.lang
-            }
+            message: "data have been updated",
+            data: data
         })
     })
+
 })
 
-//Browse
-router.post('/maps/search', function (req, res, next) {
-    var { title,lang,lat } = req.body;
-    Maps.find({ $or: [{ title,lat, lang }, { title }, { lat },{lang}] }, function (err, response) {
-        if (err) res.sendStatus(403)
-        if (response.length > 0) {
-            res.send({
-                data: response
-            })
-        } else {
-            res.status(201).send({
-                success: false,
-                msg: "Result Not Found"
-            })
-        }
-    })
-})
-
-
-//Read
-router.get('/maps', function (req, res) {
-    Maps.find({}, function (err, data) {
+router.delete('/dataDate/:id', verifyToken, function (req, res, next) {
+    var _id = req.params.id
+    DataDates.findByIdAndRemove(_id, (err, data) => {
         res.status(201).json({
-            data,
-            message: 'read'
-
+            success: true,
+            message: "data have been deleted",
+            data: data
         })
-    });
+    })
+
 })
 
+//Maps
+router.post('/maps', verifyToken, function (req, res, next) {
+    var { id, title, lat, lang } = req.body;
 
-// Edit
-router.put('/maps/:id', (req, res) => {
-    var id = req.params.id
-    Maps.findOneAndUpdate({ _id: id },
-        {
-            title: req.body.title,
-            lat: req.body.lat,
-            lang: req.body.lang
-        }, { new: true }, function (err, data) {
-            if (err) res.sendStatus(403)
-            res.status(201).json({
+    Maps.create({ id, title, lat, lang }, (err, data) => {
+        res.status(201).json({
+            success: true,
+            message: "maps have been added",
+            data: data
+        })
+    })
+
+});
+
+router.get('/maps', verifyToken, function (req, res, next) {
+    Maps.find(
+        {})
+        // .limit(3)
+        // .sort({ 'id': -1 })
+        .exec(function (err, data) {
+            res.status(200).json({
                 data
             })
         })
+
 })
 
-//Delete
-router.delete('/maps/:id', (req, res) => {
-    var id = req.params.id
-    Maps.findOneAndDelete({ _id: id }, function (err, data) {
-        if (err) res.sendStatus(403)
+router.put('/maps/:id', verifyToken, function (req, res, next) {
+    var _id = req.params.id
+    var { title, lat, lang } = req.body
+    Maps.findByIdAndUpdate(_id, { title, lat, lang }, { new: true }, (err, data) => {
         res.status(201).json({
-            message: "success"
+            success: true,
+            message: "Maps have been updated",
+            data: data
         })
     })
+
 })
 
-//Find
-router.get("/maps/:id", (req, res) => {
-    let id = req.params.id
-    Maps.findById({ _id: id }, function (err, data) {
-        if (data) {
-            res.json({
-                success: true,
-                message: "data found",
-                data
-            })
-        } else {
-            res.status(201).json({
-                success: false,
-                message: "data not found"
-            })
-        }
+router.delete('/maps/:id', verifyToken, function (req, res, next) {
+    var _id = req.params.id
+    Maps.findByIdAndRemove(_id, (err, data) => {
+        res.status(201).json({
+            success: true,
+            message: "Maps have been deleted",
+            data: data
+        })
     })
+
 })
 
+router.get('/users/all', verifyToken, function (req, res, next) {
+    res.send('Berhasil')
+})
 
+/*--------------------------------- Verifiy Token --------------------------------------------------------*/
 function verifyToken(req, res, next) {
+    // Get auth header value
     const bearerHeader = req.headers['token'];
-    console.log(bearerHeader)
+    // Check if bearer is undefined
     if (typeof bearerHeader !== 'undefined') {
+        // Split at the space
         const bearer = bearerHeader.split(' ');
+        // Get token from array
         const bearerToken = bearer[1];
+        // Set the token
         req.token = bearerToken;
+        // Next middleware
         next();
     } else {
-        res.send({ message: "Token Undefined!" });
+        // Forbidden
+        res.sendStatus(403);
     }
 
 }
-
 
 module.exports = router;
