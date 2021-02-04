@@ -1,5 +1,4 @@
 import Swal from 'sweetalert2'
-import history from '../history'
 
 const users = (state = [], action) => {
     switch (action.type) {
@@ -19,10 +18,18 @@ const users = (state = [], action) => {
                 Swal.fire({
                     icon: 'success',
                     title: 'Register Successfully!',
-                    text: `${action.user.data.email}`
-                }).then(function () {
+                    text: `${action.user.data.email}`,
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'Okay'
+                }).then(function (result) {
                     localStorage.setItem("token", action.user.token);
-                    history.push('/home')
+                    localStorage.setItem("email", action.user.data.email);
+                    if (result.isConfirmed) {
+                        window.location.href = '/home'
+                    }
+
+
+
                 });
                 return item
             });
@@ -44,7 +51,7 @@ const users = (state = [], action) => {
             return state.map(item => {
                 localStorage.setItem("token", action.user.token);
                 localStorage.setItem("email", action.user.data.email);
-                history.push('/home')
+                window.location.href = '/home'
                 return item
             });
 

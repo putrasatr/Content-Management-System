@@ -1,14 +1,15 @@
 import React, { Component } from 'react';
-import { updateData, deleteData, resendData } from '../../actions/datas';
+import { updateMaps, deleteMaps, resendMaps } from '../../actions/maps';
 import { connect } from 'react-redux';
 import Swal from 'sweetalert2';
 
-class DataItem extends Component {
+class MapItem extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            letter: this.props.letter,
-            frequency: this.props.frequency,
+            title: this.props.title || '',
+            lat: this.props.lat || '',
+            lang: this.props.lang || '',
             isEdit: false,
         }
         this.editBtnClicked = this.editBtnClicked.bind(this)
@@ -28,38 +29,38 @@ class DataItem extends Component {
         const target = event.target;
         const value = target.type === 'checkbox' ? target.checked : target.value;
         const name = target.name;
-        
+
         this.setState({
             [name]: value
         });
-    }
-    handleUpdate(event) {
-        this.props.updateData(this.props.id, this.state.letter, this.state.frequency)
+    } 
+
+    handleUpdate() {
+        this.props.updateMaps(this.props.id, this.state.title, this.state.lat, this.state.lang)
         this.setState({
-            isEdit: false,
-            editLetter: event.target.value
+            isEdit: false
         })
     }
 
     handleResend() {
-        this.props.resendData(this.props.id, this.state.letter, this.state.frequency)
+        this.props.resendMaps(this.props.id, this.state.title, this.state.lat, this.state.lang)
     }
 
     handleDelete() {
         Swal.fire({
             title: 'Are you sure?',
-            text: "You can't restore it again.",
+            text: "You're data can't restore again!",
             icon: 'warning',
             showCancelButton: true,
-            cancelButtonColor: '#d22',
             confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
             confirmButtonText: 'Yes, I\'m sure!'
         }).then((result) => {
             if (result.isConfirmed) {
-                this.props.deleteData(this.props.id)
+                this.props.deleteMaps(this.props.id)
                 Swal.fire(
                     'Deleted!',
-                    'Your data has been deleted.',
+                    'Your file has been deleted.',
                     'success'
                 )
             }
@@ -73,26 +74,31 @@ class DataItem extends Component {
                 <tr>
                     <th scope="row">{this.props.no}</th>
                     <td>
-                        <input type="text" value={this.state.letter} onChange={this.handleInputChange} name="letter" className="form-control" />
+                        <input type="text" value={this.state.title} onChange={this.handleInputChange} name="title" className="form-control" />
                     </td>
                     <td>
-                        <input type="text" value={this.state.frequency} onChange={this.handleInputChange} name="frequency" className="form-control" />
+                        <input type="text" value={this.state.lat} onChange={this.handleInputChange} name="lat" className="form-control" />
+                    </td>
+                    <td>
+                        <input type="text" value={this.state.lang} onChange={this.handleInputChange} name="lang" className="form-control" />
                     </td>
 
                     <td>
-                        <button onClick={this.handleUpdate} className="btn btn-success mr-2 "><i className="fa fa-save"></i> save</button>
+                        <button onClick={this.handleUpdate} className={"btn btn-success mr-2 "}><i className="fa fa-save"></i> Save</button>
                     </td>
                 </tr>
             )
         } else {
-
             return (
                 <tr className={this.props.sent ? "" : "bg-danger text-white"}>
                     <th scope="row">{this.props.no}</th>
-                    <td>{this.props.letter === this.props.searchLetter ? this.props.searchLetter : this.props.letter}</td>
-                    <td>{this.state.frequency === this.props.searchFrequency ? this.props.searchFrequency : this.state.frequency}</td>
+                    <td>{this.handleInputChange ? this.state.isEdit ? this.state.title : this.props.title  : this.state.title}</td>
+                    <td >{this.state.lat}</td>
+                    <td>{this.state.lang}</td>
+
+
                     <td>
-                        <button onClick={this.editBtnClicked} className={this.props.sent ? "btn btn-success mr-2" : "d-none"}><i className="fa fa-edit"></i> update </button>
+                        <button onClick={this.editBtnClicked} className={this.props.sent ? "btn btn-success mr-2" : "d-none"}><i className="fa fa-edit"></i> Update </button>
                         <button onClick={this.props.sent ? this.handleDelete : this.handleResend} className={this.props.sent ? 'btn btn-danger' : 'btn btn-warning'}><i className={this.props.sent ? "fa fa-trash" : "fa fa-refresh"}></i> {this.props.sent ? 'delete' : 'Resend'}</button>
                     </td>
                 </tr>
@@ -101,13 +107,13 @@ class DataItem extends Component {
     }
 }
 
-const mapDispatchToProps = (dispatch) => ({
-    updateData: (id, letter, frequency) => dispatch(updateData(id, letter, frequency)),
-    deleteData: (id) => dispatch(deleteData(id)),
-    resendData: (id, letter, frequency) => dispatch(resendData(id, letter, frequency)),
+const mapDispatchToProps = (dispatch, ownProps) => ({
+    updateMaps: (id, title, lat,lang) => dispatch(updateMaps(id, title, lat,lang)),
+    deleteMaps: () => dispatch(deleteMaps(ownProps.id)),
+    resendMaps: (id, title,lat, lang) => dispatch(resendMaps(id, title, lat,lang)),
 })
 
 export default connect(
     null,
     mapDispatchToProps
-)(DataItem)
+)(MapItem)

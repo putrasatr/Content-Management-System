@@ -24,7 +24,7 @@ export const addData = (letter, frequency) => {
     let id = Date.now()
     return dispatch => {
         request.post('/api/checkdata', {
-            letter
+            letter , frequency
         }).then(response => {
             if (response.data) {
                 dispatch(addDataExists(letter));

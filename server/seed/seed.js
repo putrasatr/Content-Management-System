@@ -2,11 +2,11 @@ var mongoose = require('mongoose');
 const fs = require('fs');
 const DataDates = require('../models/dataDates')
 
-const db = "mongodb://localhost/cms";
+const db = "mongodb://localhost/client";
 
 var getData = fs.readFileSync(__dirname + '/data.json', 'utf8')
 var data = JSON.parse(getData)
-
+console.log(data)
 mongoose.connect(db, { useNewUrlParser: true, useUnifiedTopology: true }, function () {
     DataDates.insertMany(data)
         .then(function () {

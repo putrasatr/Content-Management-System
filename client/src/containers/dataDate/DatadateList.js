@@ -1,33 +1,32 @@
 import React, { Component } from 'react';
-import DataItem from './DataItem';
+import DatadateItem from './DatadateItem';
 import { connect } from 'react-redux';
-import { loadData } from '../../actions/datas';
+import { loadDatadate } from '../../actions/dataDates';
 
-class DataList extends Component {
+class DatadateList extends Component {
 
     componentDidMount() {
-        this.props.loadData();
+        this.props.loadDatadate();
     }
+
     render() {
         let dataFiltered = this.props.data;
         if (this.props.searchLetter && this.props.searchFrequency) {
             dataFiltered = this.props.data.filter(item =>
-                item.letter.toLowerCase().includes(this.props.searchLetter.toLowerCase()) && Number(item.frequency) === Number(this.props.searchFrequency)
+                item.letter.toLowerCase() === this.props.searchLetter.toLowerCase() && Number(item.frequency) === Number(this.props.searchFrequency)
             )
         } else if (this.props.searchLetter) {
             dataFiltered = this.props.data.filter(item =>
-                item.letter.toLowerCase().includes(this.props.searchLetter.toLowerCase())
+                item.letter.toLowerCase() === this.props.searchLetter.toLowerCase()
             )
         } else if (this.props.searchFrequency) {
             dataFiltered = this.props.data.filter(item =>
-                Number(item.frequency) === Number(this.props.searchFrequency)
+                item.frequency === this.props.searchFrequency
             )
         }
 
         const dataNode = dataFiltered.map((item, index) =>
-            <DataItem
-                searchLetter={this.props.searchLetter}
-                searchFrequency={this.props.searchFrequency}
+            <DatadateItem
                 key={index}
                 id={item._id}
                 no={index + 1}
@@ -56,14 +55,14 @@ class DataList extends Component {
 }
 
 const mapStateToProps = (state) => ({
-    data: state.datas
+    data: state.dataDates
 })
 
 const mapDispatchToProps = (dispatch) => ({
-    loadData: () => dispatch(loadData())
+    loadDatadate: () => dispatch(loadDatadate())
 })
 
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(DataList)
+)(DatadateList)

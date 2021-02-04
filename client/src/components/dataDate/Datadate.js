@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import Navbar from '../Navbar';
-import DataForm from '../../containers/data/DataForm';
-import DataSearch from '../../containers/data/DataSearch';
-import DataList from '../../containers/data/DataList';
-import './Data.css'
+import DatadateForm from '../../containers/dataDate/DatadateForm';
+import DatadateSearch from '../../containers/dataDate/DatadateSearch';
+import DatadateList from '../../containers/dataDate/DatadateList';
+import './Datadate.css'
 
-export default class Data extends Component {
-    constructor(props) {
+export default class Datadate extends Component {
+    constructor(props){
         super(props)
         this.state = {
             searchLetter: '',
@@ -31,18 +31,18 @@ export default class Data extends Component {
             <div>
                 <Navbar />
                 <div className="container my-md-4">
-                    <DataForm />
+                    <DatadateForm />
                     <h3 className="mt-4">Search</h3>
                     <hr />
-                    <DataSearch
-                        onSearchLetter={this.onSearchLetter}
+                    <DatadateSearch 
+                        onSearchLetter={this.onSearchLetter} 
                         onSearchFrequency={this.onSearchFrequency}
-                        searchLetter={this.state.searchLetter}
-                        searchFrequency={this.state.searchFrequency}
+                        searchLetter = {this.state.searchLetter}
+                        searchFrequency = {this.state.searchFrequency}
                     />
-                    <DataList
-                        searchLetter={this.state.searchLetter}
-                        searchFrequency={this.state.searchFrequency}
+                    <DatadateList 
+                        searchLetter = {this.state.searchLetter}
+                        searchFrequency = {this.state.searchFrequency}
                     />
                 </div>
             </div>

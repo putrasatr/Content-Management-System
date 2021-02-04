@@ -9,9 +9,11 @@ export default class Card extends Component {
         return (
             <div>
                 <Navbar />
-                <div className="jumbotron">
-                    <div className="container">
-                        <h1 className="display-3">Welcome, {email}!</h1>
+                <div className="container">
+                    <div className="mt-5">
+                        <div className="alert alert-secondary mt-5" role="alert">
+                            <h1 className="display-4">Welcome, <b>{email ? email : ''}</b></h1>
+                        </div>
                     </div>
                 </div>
             </div>

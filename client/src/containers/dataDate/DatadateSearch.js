@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-export default class DataSearch extends Component {
+export default class DatadateSearch extends Component {
     constructor(props) {
         super(props);
         this.handleInputChange = this.handleInputChange.bind(this);
@@ -22,7 +22,7 @@ export default class DataSearch extends Component {
                 <div className="col-sm-4 d-flex">
                     <label className="col-form-label mr-2">Letter</label>
                     <input
-                        type="text"
+                        type="date"
                         className="form-control"
                         placeholder="A"
                         aria-label="Letter"

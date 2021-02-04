@@ -17,10 +17,9 @@ const datas = (state = [], action) => {
                 // return console.log(item)
                 Swal.fire({
                     icon: 'success',
-                    title: 'Data has been Add!',
+                    title: 'Successfully Add Data !',
                     text: ''
                 }).then(function () {
-                    // history.push('/home')
                 });
                 item.sent = true
                 return item
@@ -31,8 +30,8 @@ const datas = (state = [], action) => {
                 // return console.log(item)
                 Swal.fire({
                     icon: 'error',
-                    title: 'Title is already exists!',
-                    text: ''
+                    title: 'Letter is already exists!',
+                    text: 'Try another letter.'
                 }).then(function () {
                     // history.push('/home')
                 });

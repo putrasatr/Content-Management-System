@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { addData } from '../../actions/datas'
+import { addDatadate } from '../../actions/dataDates'
 
-class DataForm extends Component {
+class DatadateForm extends Component {
     constructor(props) {
         super(props)
         this.state = {
@@ -27,9 +27,9 @@ class DataForm extends Component {
     }
     handleInputChange(event) {
         const target = event.target;
-        console.log(target)
         const value = target.type === 'checkbox' ? target.checked : target.value;
         const name = target.name;
+
         this.setState({
             [name]: value,
         })
@@ -37,7 +37,7 @@ class DataForm extends Component {
 
     handleClickSave(event) {
         if (this.state.letter && this.state.frequency) {
-            this.props.addData(this.state.letter, this.state.frequency)
+            this.props.addDatadate(this.state.letter, this.state.frequency)
             this.setState({ letter: '', frequency: '' })
         }
         event.preventDefault();
@@ -52,17 +52,16 @@ class DataForm extends Component {
                             <div className="col-sm-4 d-flex">
                                 <label className="col-form-label mr-2">Letter</label>
                                 <input
-                                    type="text"
+                                    type="date"
                                     className="form-control"
                                     placeholder="A"
                                     aria-label="Letter"
                                     name="letter"
                                     value={this.state.letter}
-                                    onChange={this.handleInputChange} 
-                                    required />
+                                    onChange={this.handleInputChange} />
                             </div>
                             <div className="col-sm-4 d-flex">
-                                <label className="col-form-label md-4 mr-2">Frequency</label>
+                                <label className="col-form-label mr-2">Frequency</label>
                                 <input
                                     type="text"
                                     className="form-control"
@@ -70,10 +69,9 @@ class DataForm extends Component {
                                     aria-label="Frequency"
                                     name="frequency"
                                     value={this.state.frequency}
-                                    onChange={this.handleInputChange} 
-                                    required />
+                                    onChange={this.handleInputChange} />
                             </div>
-                            <button type="submit" className="btn btn-outline-light">save</button>
+                            <button type="submit" className="btn btn-outline-dark">Submit</button>
                         </form>
                     </div>
                 </div>
@@ -83,10 +81,10 @@ class DataForm extends Component {
 }
 
 const mapDispatchToProps = dispatch => ({
-    addData: (letter, frequency) => dispatch(addData(letter, frequency)),
+    addDatadate: (letter, frequency) => dispatch(addDatadate(letter, frequency)),
 })
 
 export default connect(
     null,
     mapDispatchToProps
-)(DataForm)
+)(DatadateForm)

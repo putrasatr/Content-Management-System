@@ -149,10 +149,7 @@ router.post('/dataDate', verifyToken, function (req, res, next) {
 });
 
 router.get('/dataDate', verifyToken, function (req, res, next) {
-    DataDates.find(
-        {})
-        // .limit(3)
-        // .sort({ 'id': -1 })
+    DataDates.find()
         .exec(function (err, data) {
             res.status(200).json({
                 data
