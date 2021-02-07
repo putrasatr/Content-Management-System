@@ -1,41 +1,23 @@
 import React, { Component } from 'react';
 import DatadateItem from './DatadateItem';
-import { connect } from 'react-redux';
-import { loadDatadate } from '../../actions/dataDates';
 
-class DatadateList extends Component {
 
-    componentDidMount() {
-        this.props.loadDatadate();
-    }
+export default class DatadateList extends Component {
+
 
     render() {
-        let dataFiltered = this.props.data;
-        if (this.props.searchLetter && this.props.searchFrequency) {
-            dataFiltered = this.props.data.filter(item =>
-                item.letter.toLowerCase() === this.props.searchLetter.toLowerCase() && Number(item.frequency) === Number(this.props.searchFrequency)
-            )
-        } else if (this.props.searchLetter) {
-            dataFiltered = this.props.data.filter(item =>
-                item.letter.toLowerCase() === this.props.searchLetter.toLowerCase()
-            )
-        } else if (this.props.searchFrequency) {
-            dataFiltered = this.props.data.filter(item =>
-                item.frequency === this.props.searchFrequency
-            )
-        }
 
-        const dataNode = dataFiltered.map((item, index) =>
+
+        const dataNode = this.props.data.map((item, index) =>
             <DatadateItem
                 key={index}
-                id={item._id}
+                _id={item._id}
                 no={index + 1}
                 letter={item.letter}
                 frequency={item.frequency}
                 sent={item.sent}
             />
         )
-
         return (
             <table className="table table-striped">
                 <thead>
@@ -54,15 +36,3 @@ class DatadateList extends Component {
     }
 }
 
-const mapStateToProps = (state) => ({
-    data: state.dataDates
-})
-
-const mapDispatchToProps = (dispatch) => ({
-    loadDatadate: () => dispatch(loadDatadate())
-})
-
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(DatadateList)

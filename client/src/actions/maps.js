@@ -66,14 +66,14 @@ export const updateMapsFailure = (id) => ({
     id
 })
 
-export const updateMapsView = (id, title, lat,lang) => ({
+export const updateMapsView = (_id, id,title, lat,lang) => ({
     type: 'UPDATE_MAPS',
-    id, title, lat,lang
+    _id, id,title, lat,lang
 })
 
-export const updateMaps = (id, title ,lat , lang) => {
+export const updateMaps = (_id,id, title ,lat , lang) => {
     return dispatch => {
-        dispatch(updateMapsView(id, title,lat ,lang))
+        dispatch(updateMapsView(_id,id, title,lat ,lang))
         return request.put(`/api/maps/${id}`, {
             id, title,lat,lang
         }).then(response => {

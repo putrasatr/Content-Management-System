@@ -5,12 +5,12 @@ const bcrypt = require('bcrypt');
 const saltRounds = 10;
 const myPlaintextPassword = 's0/\/\P4$$w0rD';
 const someOtherPlaintextPassword = 'not_bacon';
-
+const cors = require('cors')
+router.use(cors())
 var Users = require('../models/users')
 var Datas = require('../models/datas')
 var DataDates = require('../models/dataDates')
 var Maps = require('../models/maps')
-
 /* GET home page. */
 router.post('/users/register', function (req, res, next) {
     var { id, email, password, retypepassword } = req.body;
@@ -86,7 +86,6 @@ router.post('/checkdata', verifyToken, function (req, res, next) {
 
 router.post('/data', verifyToken, function (req, res, next) {
     var { id, letter, frequency } = req.body;
-
     Datas.create({ id, letter, frequency }, (err, data) => {
         res.status(201).json({
             success: true,
@@ -99,63 +98,60 @@ router.post('/data', verifyToken, function (req, res, next) {
 
 router.get('/data', verifyToken, function (req, res, next) {
     Datas.find(
-        {})
-        // .limit(3)
-        // .sort({ 'id': -1 })
-        .exec(function (err, data) {
+        {}).exec(function (err, data) {
             res.status(200).json({
                 data
             })
         })
-
 })
 
-router.put('/data/:id', verifyToken, function (req, res, next) {
-    var _id = req.params.id
-    var { letter, frequency } = req.body
-    Datas.findByIdAndUpdate(_id, { letter, frequency }, { new: true }, (err, data) => {
-        res.status(201).json({
-            success: true,
-            message: "data have been updated",
-            data: data
-        })
+router.put('/data/:id', verifyToken, (req, res, next) => {
+    var { letter, frequency, id } = req.body;
+    Datas.find({ id }, (err, data) => {
+        Datas.findByIdAndUpdate(data[0]._id, { id, letter, frequency }, { new: true }, (err, result) => {
+            res.status(201).json({
+                success: true,
+                message: "data have been updated",
+                data: result
+            });
+        });
     })
-
 })
 
 router.delete('/data/:id', verifyToken, function (req, res, next) {
-    var _id = req.params.id
-    Datas.findByIdAndRemove(_id, (err, data) => {
-        res.status(201).json({
-            success: true,
-            message: "data have been deleted",
-            data: data
+    var { id } = req.params
+    Datas.find({ id }, (err, data) => {
+        Datas.findByIdAndDelete(data[0]._id, (err, data) => {
+            res.status(201).json({
+                success: true,
+                message: "data have been deleted",
+                data: data
+            })
         })
     })
+
 
 })
 
 router.post('/dataDate', verifyToken, function (req, res, next) {
-    var { id, letter, frequency } = req.body;
-
-    DataDates.create({ id, letter, frequency }, (err, data) => {
+    var { letter, frequency } = req.body;
+    DataDates.create({ letter, frequency }, (err, data) => {
         res.status(201).json({
             success: true,
             message: "data have been added",
-            data: data
+            data: data,
+            fr: data.frequency
         })
     })
-
 });
 
 router.get('/dataDate', verifyToken, function (req, res, next) {
-    DataDates.find()
+    DataDates.find({})
         .exec(function (err, data) {
             res.status(200).json({
                 data
             })
         })
-
 })
 
 router.put('/dataDate/:id', verifyToken, function (req, res, next) {
@@ -199,9 +195,7 @@ router.post('/maps', verifyToken, function (req, res, next) {
 
 router.get('/maps', verifyToken, function (req, res, next) {
     Maps.find(
-        {})
-        // .limit(3)
-        // .sort({ 'id': -1 })
+        {}) 
         .exec(function (err, data) {
             res.status(200).json({
                 data
@@ -211,28 +205,31 @@ router.get('/maps', verifyToken, function (req, res, next) {
 })
 
 router.put('/maps/:id', verifyToken, function (req, res, next) {
-    var _id = req.params.id
+    var id = req.params.id
     var { title, lat, lang } = req.body
-    Maps.findByIdAndUpdate(_id, { title, lat, lang }, { new: true }, (err, data) => {
-        res.status(201).json({
-            success: true,
-            message: "Maps have been updated",
-            data: data
+    Maps.find({ id }, (err, data) => {
+        Maps.findByIdAndUpdate(data[0]._id, {id, title, lat, lang }, { new: true }, (err, result) => {
+            console.log("ini",result)
+            res.status(201).json({
+                success: true,
+                message: "Maps have been updated",
+                data: result
+            })
         })
     })
-
 })
 
 router.delete('/maps/:id', verifyToken, function (req, res, next) {
-    var _id = req.params.id
-    Maps.findByIdAndRemove(_id, (err, data) => {
-        res.status(201).json({
-            success: true,
-            message: "Maps have been deleted",
-            data: data
+    var id = req.params.id
+    Maps.find({ id }, (err, data) => {
+        Maps.findByIdAndDelete(data[0]._id, (err, data) => {
+            res.status(201).json({
+                success: true,
+                message: "Maps have been deleted",
+                data: data
+            })
         })
     })
-
 })
 
 router.get('/users/all', verifyToken, function (req, res, next) {

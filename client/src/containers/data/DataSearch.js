@@ -5,7 +5,7 @@ export default class DataSearch extends Component {
         super(props);
         this.handleInputChange = this.handleInputChange.bind(this);
     }
-
+    
     handleInputChange(event) {
         const target = event.target;
         const value = target.type === 'checkbox' ? target.checked : target.value;

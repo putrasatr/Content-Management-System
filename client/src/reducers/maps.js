@@ -46,13 +46,16 @@ const maps = (state = [], action) => {
 
         case 'UPDATE_MAPS':
             return state.map(item => {
+                console.log(item.id,action.id)
                 if (item.id === action.id) {
                     return (
                         {
-                            id: action.id,
+                            _id:item._id,
+                            id:item.id,
                             title: action.title,
                             lat: action.lat,
                             lang: action.lang,
+                            sent:true
                         }
                     )
                 }
@@ -66,7 +69,8 @@ const maps = (state = [], action) => {
             return state;
 
         case 'DELETE_MAPS':
-            return state.filter(item => item._id !== action.id)
+            console.log("filter",state.filter(item => item.id !== action.id))
+            return state.filter(item => item.id !== action.id)
 
         case 'DELETE_MAPS_SUCCESS':
             return state

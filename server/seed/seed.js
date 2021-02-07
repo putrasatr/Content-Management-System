@@ -6,7 +6,6 @@ const db = "mongodb://localhost/client";
 
 var getData = fs.readFileSync(__dirname + '/data.json', 'utf8')
 var data = JSON.parse(getData)
-console.log(data)
 mongoose.connect(db, { useNewUrlParser: true, useUnifiedTopology: true }, function () {
     DataDates.insertMany(data)
         .then(function () {

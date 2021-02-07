@@ -5,7 +5,6 @@ import './Home.css'
 export default class Card extends Component {
     render() {
         const email = localStorage.getItem("email")
-        console.log(email)
         return (
             <div>
                 <Navbar />

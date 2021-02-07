@@ -7,8 +7,8 @@ class DataItem extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            letter: this.props.letter,
-            frequency: this.props.frequency,
+            letter: this.props.letter|| '',
+            frequency: this.props.frequency|| '',
             isEdit: false,
         }
         this.editBtnClicked = this.editBtnClicked.bind(this)
@@ -20,6 +20,8 @@ class DataItem extends Component {
 
     editBtnClicked() {
         this.setState({
+            letter:this.props.letter,
+            frequency:this.props.frequency,
             isEdit: true
         })
     }
@@ -34,10 +36,10 @@ class DataItem extends Component {
         });
     }
     handleUpdate(event) {
-        this.props.updateData(this.props.id, this.state.letter, this.state.frequency)
+        this.props.updateData(this.props._id,this.props.id, this.state.letter, this.state.frequency)
         this.setState({
-            isEdit: false,
-            editLetter: event.target.value
+            isEdit: false
+
         })
     }
 
@@ -48,18 +50,18 @@ class DataItem extends Component {
     handleDelete() {
         Swal.fire({
             title: 'Are you sure?',
-            text: "You can't restore it again.",
+            text: "You're data can't restore again!",
             icon: 'warning',
             showCancelButton: true,
-            cancelButtonColor: '#d22',
             confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
             confirmButtonText: 'Yes, I\'m sure!'
         }).then((result) => {
             if (result.isConfirmed) {
                 this.props.deleteData(this.props.id)
                 Swal.fire(
                     'Deleted!',
-                    'Your data has been deleted.',
+                    'Your file has been deleted.',
                     'success'
                 )
             }
@@ -70,6 +72,7 @@ class DataItem extends Component {
     render() {
         if (this.state.isEdit) {
             return (
+                
                 <tr>
                     <th scope="row">{this.props.no}</th>
                     <td>
@@ -84,25 +87,27 @@ class DataItem extends Component {
                     </td>
                 </tr>
             )
+
         } else {
 
             return (
                 <tr className={this.props.sent ? "" : "bg-danger text-white"}>
                     <th scope="row">{this.props.no}</th>
-                    <td>{this.props.letter === this.props.searchLetter ? this.props.searchLetter : this.props.letter}</td>
-                    <td>{this.state.frequency === this.props.searchFrequency ? this.props.searchFrequency : this.state.frequency}</td>
+                    <td>{this.props.letter}</td>
+                    <td>{this.props.frequency}</td>
                     <td>
                         <button onClick={this.editBtnClicked} className={this.props.sent ? "btn btn-success mr-2" : "d-none"}><i className="fa fa-edit"></i> update </button>
-                        <button onClick={this.props.sent ? this.handleDelete : this.handleResend} className={this.props.sent ? 'btn btn-danger' : 'btn btn-warning'}><i className={this.props.sent ? "fa fa-trash" : "fa fa-refresh"}></i> {this.props.sent ? 'delete' : 'Resend'}</button>
+                        <button onClick={this.props.sent ? this.handleDelete : this.handleResend} className={this.props.sent ? 'btn btn-danger' : 'btn btn-warning'}><i className={this.props.sent ? "fa fa-trash" : "fa fa-refresh"}></i> {this.props.sent ? 'delete' : 'resend'}</button>
                     </td>
                 </tr>
             )
         }
+        
     }
 }
 
 const mapDispatchToProps = (dispatch) => ({
-    updateData: (id, letter, frequency) => dispatch(updateData(id, letter, frequency)),
+    updateData: (_id,id, letter, frequency) => dispatch(updateData(_id,id, letter, frequency)),
     deleteData: (id) => dispatch(deleteData(id)),
     resendData: (id, letter, frequency) => dispatch(resendData(id, letter, frequency)),
 })

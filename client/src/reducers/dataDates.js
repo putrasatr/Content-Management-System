@@ -6,7 +6,6 @@ const dataDates = (state = [], action) => {
             return [
                 ...state,
                 {
-                    id: action.id,
                     letter: action.letter,
                     frequency: action.frequency
                 }
@@ -46,12 +45,13 @@ const dataDates = (state = [], action) => {
 
         case 'UPDATE_DATA_DATE':
             return state.map(item => {
-                if (item.id === action.id) {
+                if (item._id === action._id) {
                     return (
                         {
-                            id: action.id,
+                            _id: action._id,
                             letter: action.letter,
-                            frequency: action.frequency
+                            frequency: action.frequency,
+                            sent: true
                         }
                     )
                 }

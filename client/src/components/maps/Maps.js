@@ -1,26 +1,48 @@
-
 import React, { Component } from 'react';
 import Navbar from '../Navbar';
 import MapsForm from '../../containers/maps/MapsForm';
 import MapsSearch from '../../containers/maps/MapsSearch';
 import MapsList from '../../containers/maps/MapsList';
 import './Map.css'
+import { connect } from 'react-redux';
+import { loadMaps } from '../../actions/maps';
 
-export default class Maps extends Component {
-    constructor(props){
+class Maps extends Component {
+    constructor(props) {
         super(props)
         this.state = {
             searchTitle: ''
         }
     }
 
+    componentDidMount() {
+        this.props.loadMaps();
+    }
     onSearchTitle = (event) => {
         this.setState({
             searchTitle: event.target.value
         })
     }
+    handleInputChange(event) {
+        const target = event.target;
+        const value = target.type === 'checkbox' ? target.checked : target.value;
+        const name = target.name;
 
+        this.setState({
+            [name]: value
+        });
+    }
     render() {
+        let dataFiltered = this.props.data;
+        console.log("sebelum filter", dataFiltered)
+        if (this.state.searchTitle) {
+            dataFiltered = this.props.data.filter(item =>
+                item.title[0].toLowerCase() === this.state.searchTitle[0].toLowerCase() &&
+                item.title.toLowerCase().includes(this.state.searchTitle.toLowerCase())
+            )
+        }
+        console.log("sesudah filter", dataFiltered)
+
         return (
             <div>
                 <Navbar />
@@ -28,14 +50,12 @@ export default class Maps extends Component {
                     <MapsForm />
                     <h3 className="mt-4">Search</h3>
                     <hr />
-                    <MapsSearch 
-                        onSearchTitle={this.onSearchTitle} 
-                        searchTitle = {this.state.searchTitle}
+                    <MapsSearch
+                        onSearchTitle={this.onSearchTitle}
+                        searchTitle={this.state.searchTitle}
                     />
-                    <MapsList 
-                        searchTitle = {this.state.searchTitle}
-                        searchLat = {this.state.searchLat}
-                        searchLang = {this.state.searchLang}
+                    <MapsList
+                        data={[...dataFiltered]}
 
                     />
                 </div>
@@ -43,3 +63,16 @@ export default class Maps extends Component {
         )
     }
 }
+
+const mapStateToProps = (state) => ({
+    data: state.maps
+})
+
+const mapDispatchToProps = (dispatch) => ({
+    loadMaps: () => dispatch(loadMaps())
+})
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(Maps)

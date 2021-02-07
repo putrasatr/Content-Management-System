@@ -27,7 +27,6 @@ class DataForm extends Component {
     }
     handleInputChange(event) {
         const target = event.target;
-        console.log(target)
         const value = target.type === 'checkbox' ? target.checked : target.value;
         const name = target.name;
         this.setState({
@@ -58,10 +57,9 @@ class DataForm extends Component {
                                     aria-label="Letter"
                                     name="letter"
                                     value={this.state.letter}
-                                    onChange={this.handleInputChange} 
-                                    required />
+                                    onChange={this.handleInputChange} />
                             </div>
-                            <div className="col-sm-4 d-flex">
+                            <div className="col-sm-5 d-flex">
                                 <label className="col-form-label md-4 mr-2">Frequency</label>
                                 <input
                                     type="text"
@@ -70,10 +68,9 @@ class DataForm extends Component {
                                     aria-label="Frequency"
                                     name="frequency"
                                     value={this.state.frequency}
-                                    onChange={this.handleInputChange} 
-                                    required />
+                                    onChange={this.handleInputChange} />
                             </div>
-                            <button type="submit" className="btn btn-outline-light">save</button>
+                            <button type="submit" className="btn btn-secondary">save</button>
                         </form>
                     </div>
                 </div>

@@ -11,9 +11,9 @@ export const addDatadateFailure = (id) => ({
     id
 })
 
-export const addDatadateView = (id, letter, frequency) => ({
+export const addDatadateView = (id,letter, frequency) => ({
     type: 'ADD_DATA_DATE',
-    id, letter, frequency
+    id,letter, frequency
 })
 export const addDatadateExists = (letter) => ({
     type: 'ADD_DATA_DATE_EXISTS',
@@ -29,9 +29,9 @@ export const addDatadate = (letter, frequency) => {
             if (response.data) {
                 dispatch(addDatadateExists(letter));
             } else {
-                dispatch(addDatadateView(id, letter, frequency))
+                dispatch(addDatadateView(id,letter, frequency))
                 return request.post('/api/dataDate', {
-                    id, letter, frequency
+                    id,letter, frequency
                 }).then(response => {
                     dispatch(addDatadateSuccess(response.data.data))
                 }).catch(function (error) {
@@ -41,7 +41,7 @@ export const addDatadate = (letter, frequency) => {
             }
         }).catch(function (error) {
             console.log(error);
-            dispatch(addDatadateView(id, letter, frequency))
+            dispatch(addDatadateView(letter, frequency))
             dispatch(addDatadateFailure(id))
         })
     }
@@ -83,21 +83,21 @@ export const updateDatadateFailure = (id) => ({
     id
 })
 
-export const updateDatadateView = (id, letter, frequency) => ({
+export const updateDatadateView = (_id,letter, frequency) => ({
     type: 'UPDATE_DATA_DATE',
-    id, letter, frequency
+    _id, letter, frequency
 })
 
-export const updateDatadate = (id, letter, frequency) => {
+export const updateDatadate = (_id, letter, frequency) => {
     return dispatch => {
-        dispatch(updateDatadateView(id, letter, frequency))
-        return request.put(`/api/dataDate/${id}`, {
-            id, letter, frequency
+        dispatch(updateDatadateView(_id, letter, frequency))
+        return request.put(`/api/dataDate/${_id}`, {
+            _id, letter, frequency
         }).then(response => {
             dispatch(updateDatadateSuccess(response.data.data))
         }).catch(function (error) {
             console.log(error);
-            dispatch(updateDatadateFailure(id))
+            dispatch(updateDatadateFailure(_id))
         })
     }
 }
@@ -118,10 +118,10 @@ export const deleteDatadateView = (id) => ({
     id
 })
 
-export const deleteDatadate = (id) => {
+export const deleteDatadate = (_id) => {
     return dispatch => {
-        dispatch(deleteDatadateView(id))
-        return request.delete(`/api/dataDate/${id}`)
+        dispatch(deleteDatadateView(_id))
+        return request.delete(`/api/dataDate/${_id}`)
             .then(response => {
                 dispatch(deleteDatadateSuccess(response.data.data))
             }).catch(function (error) {
@@ -132,15 +132,15 @@ export const deleteDatadate = (id) => {
 //end delete data
 
 //start resend data
-export const resendDatadate = (id, letter, frequency) => {
+export const resendDatadate = (id,letter, frequency) => {
     return dispatch => {
-        return request.post('/api/dataDate', { id, letter, frequency })
+        return request.post('/api/dataDate', {id,letter, frequency })
             .then(function (response) {
                 dispatch(addDatadateSuccess(response.data))
             })
             .catch(function (error) {
                 console.error(error);
-                dispatch(addDatadateFailure(id))
+                dispatch(addDatadateFailure())
             });
     }
 }

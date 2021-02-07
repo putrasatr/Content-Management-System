@@ -2,6 +2,7 @@ import Swal from 'sweetalert2';
 
 const datas = (state = [], action) => {
     switch (action.type) {
+        
         case 'ADD_DATA':
             return [
                 ...state,
@@ -58,18 +59,31 @@ const datas = (state = [], action) => {
 
         case 'UPDATE_DATA':
             return state.map(item => {
-                if (item.id === action.id) {
+                if (item._id === action._id) {
+                    console.log("updt di rdc",item.id,action.id)
                     return (
                         {
-                            id: action.id,
+                            id: item.id,    
+                            _id: action._id,
                             letter: action.letter,
-                            frequency: action.frequency
+                            frequency: action.frequency,
+                            sent: true
                         }
                     )
                 }
                 return item
             })
-
+        case 'UPDATE_DATA_EXISTS':
+            return state.map(item => {
+                // return console.log(item)
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Letter is already exists!',
+                    text: 'Try another letter.'
+                }).then(function () {
+                });
+                return item
+            });
         case 'UPDATE_DATA_SUCCESS':
             return state;
 
@@ -77,7 +91,8 @@ const datas = (state = [], action) => {
             return state;
 
         case 'DELETE_DATA':
-            return state.filter(item => item._id !== action.id)
+            console.log(state)
+            return state.filter(item => item.id !== action.id)
 
         case 'DELETE_DATA_SUCCESS':
             return state
@@ -91,3 +106,5 @@ const datas = (state = [], action) => {
 }
 
 export default datas
+
+

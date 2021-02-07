@@ -1,27 +1,15 @@
 import React, { Component } from 'react';
 import MapsItem from './MapsItem';
-import { connect } from 'react-redux';
-import { loadMaps } from '../../actions/maps';
 
-class MapsList extends Component {
-
-    componentDidMount() {
-        this.props.loadMaps();
-    }
+export default class MapsList extends Component {
 
     render() {
-        let dataFiltered = this.props.data;
-        if (this.props.searchTitle) {
-            dataFiltered = this.props.data.filter(item =>
-                item.title.toLowerCase().includes(this.props.searchTitle.toLowerCase())
-            )
-        }
-
-        const dataNode = dataFiltered.map((item, index) =>
+        const dataNode =this.props.data.map((item, index) =>
             <MapsItem
                 key={index}
-                id={item._id}
-                no={index + 1}
+                _id={item._id}
+                id={item.id}
+                no={index+1}
                 title={item.title}
                 lat={item.lat}
                 lang={item.lang}
@@ -48,15 +36,5 @@ class MapsList extends Component {
     }
 }
 
-const mapStateToProps = (state) => ({
-    data: state.maps
-})
 
-const mapDispatchToProps = (dispatch) => ({
-    loadMaps: () => dispatch(loadMaps())
-})
 
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(MapsList)

@@ -24,7 +24,7 @@ export const addData = (letter, frequency) => {
     let id = Date.now()
     return dispatch => {
         request.post('/api/checkdata', {
-            letter , frequency
+            letter, frequency
         }).then(response => {
             if (response.data) {
                 dispatch(addDataExists(letter));
@@ -83,15 +83,16 @@ export const updateDataFailure = (id) => ({
     id
 })
 
-export const updateDataView = (id, letter, frequency) => ({
+export const updateDataView = (_id,id, letter, frequency) => ({
     type: 'UPDATE_DATA',
-    id, letter, frequency
+    _id,id, letter, frequency
 })
 
-export const updateData = (id, letter, frequency) => {
+export const updateData = (_id,id, letter, frequency) => {
+    console.log("id fi action",id,_id)
     return dispatch => {
-        dispatch(updateDataView(id, letter, frequency))
-        return request.put(`/api/data/${id}`, {
+        dispatch(updateDataView(_id,id, letter, frequency))
+        return request.put(`/api/data/${_id}`, {
             id, letter, frequency
         }).then(response => {
             dispatch(updateDataSuccess(response.data.data))

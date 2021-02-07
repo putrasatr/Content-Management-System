@@ -20,6 +20,8 @@ class DatadateItem extends Component {
 
     editBtnClicked() {
         this.setState({
+            letter:this.props.letter,
+            frequency:this.props.frequency,
             isEdit: true
         })
     }
@@ -35,14 +37,14 @@ class DatadateItem extends Component {
     }
 
     handleUpdate() {
-        this.props.updateDatadate(this.props.id, this.state.letter, this.state.frequency)
+        this.props.updateDatadate(this.props._id,this.state.letter, this.state.frequency)
         this.setState({
             isEdit: false
         })
     }
 
     handleResend() {
-        this.props.resendDatadate(this.props.id, this.state.letter, this.state.frequency)
+        this.props.resendDatadate(this.props._id, this.state.letter, this.state.frequency)
     }
 
     handleDelete() {
@@ -88,8 +90,8 @@ class DatadateItem extends Component {
             return (
                 <tr className={this.props.sent ? "" : "bg-danger text-white"}>
                     <th scope="row">{this.props.no}</th>
-                    <td>{this.state.letter}</td>
-                    <td>{this.state.frequency}</td>
+                    <td>{this.props.letter}</td>
+                    <td>{this.props.frequency}</td>
 
                     <td>
                         <button onClick={this.editBtnClicked} className={this.props.sent ? "btn btn-success mr-2" : "d-none"}><i className="fa fa-edit"></i> update </button>
@@ -102,9 +104,9 @@ class DatadateItem extends Component {
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-    updateDatadate: (id, letter, frequency) => dispatch(updateDatadate(id, letter, frequency)),
-    deleteDatadate: () => dispatch(deleteDatadate(ownProps.id)),
-    resendDatadate: (id, letter, frequency) => dispatch(resendDatadate(id, letter, frequency)),
+    updateDatadate: (_id,letter, frequency) => dispatch(updateDatadate(_id,letter, frequency)),
+    deleteDatadate: () => dispatch(deleteDatadate(ownProps._id)),
+    resendDatadate: (_id, letter, frequency) => dispatch(resendDatadate(_id, letter, frequency)),
 })
 
 export default connect(

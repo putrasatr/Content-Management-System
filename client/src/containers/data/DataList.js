@@ -1,69 +1,37 @@
-import React, { Component } from 'react';
-import DataItem from './DataItem';
-import { connect } from 'react-redux';
-import { loadData } from '../../actions/datas';
+    import React, { Component } from 'react';
+    import DataItem from './DataItem';
 
-class DataList extends Component {
+    export default class DataList extends Component {
 
-    componentDidMount() {
-        this.props.loadData();
-    }
-    render() {
-        let dataFiltered = this.props.data;
-        if (this.props.searchLetter && this.props.searchFrequency) {
-            dataFiltered = this.props.data.filter(item =>
-                item.letter.toLowerCase().includes(this.props.searchLetter.toLowerCase()) && Number(item.frequency) === Number(this.props.searchFrequency)
+        render() {
+
+            const dataNode = this.props.data.map((item, index) =>
+                <DataItem
+                    key={index}
+                    _id={item._id}
+                    id={item.id}
+                    no={index + 1}
+                    letter={item.letter}
+                    frequency={item.frequency}
+                    searchLetter={item.searchLetter}
+                    sent={item.sent}
+                />
             )
-        } else if (this.props.searchLetter) {
-            dataFiltered = this.props.data.filter(item =>
-                item.letter.toLowerCase().includes(this.props.searchLetter.toLowerCase())
-            )
-        } else if (this.props.searchFrequency) {
-            dataFiltered = this.props.data.filter(item =>
-                Number(item.frequency) === Number(this.props.searchFrequency)
+            return (
+                <table className="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Letter</th>
+                            <th scope="col">Frequency</th>
+                            <th scope="col">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {dataNode}
+                    </tbody>
+                </table>
             )
         }
-
-        const dataNode = dataFiltered.map((item, index) =>
-            <DataItem
-                searchLetter={this.props.searchLetter}
-                searchFrequency={this.props.searchFrequency}
-                key={index}
-                id={item._id}
-                no={index + 1}
-                letter={item.letter}
-                frequency={item.frequency}
-                sent={item.sent}
-            />
-        )
-
-        return (
-            <table className="table table-striped">
-                <thead>
-                    <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Letter</th>
-                        <th scope="col">Frequency</th>
-                        <th scope="col">Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {dataNode}
-                </tbody>
-            </table>
-        )
     }
-}
 
-const mapStateToProps = (state) => ({
-    data: state.datas
-})
-
-const mapDispatchToProps = (dispatch) => ({
-    loadData: () => dispatch(loadData())
-})
-
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(DataList)

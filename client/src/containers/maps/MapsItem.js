@@ -7,9 +7,9 @@ class MapItem extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            title: this.props.title || '',
-            lat: this.props.lat || '',
-            lang: this.props.lang || '',
+            title: this.props.title,
+            lat: this.props.lat,
+            lang: this.props.lang,
             isEdit: false,
         }
         this.editBtnClicked = this.editBtnClicked.bind(this)
@@ -21,6 +21,9 @@ class MapItem extends Component {
 
     editBtnClicked() {
         this.setState({
+            title: this.props.title,
+            lat: this.props.lat,
+            lang: this.props.lang,
             isEdit: true
         })
     }
@@ -33,17 +36,17 @@ class MapItem extends Component {
         this.setState({
             [name]: value
         });
-    } 
+    }
 
     handleUpdate() {
-        this.props.updateMaps(this.props.id, this.state.title, this.state.lat, this.state.lang)
+        this.props.updateMaps(this.props._id, this.props.id, this.state.title, this.state.lat, this.state.lang)
         this.setState({
             isEdit: false
         })
     }
 
     handleResend() {
-        this.props.resendMaps(this.props.id, this.state.title, this.state.lat, this.state.lang)
+        this.props.resendMaps(this.props._id, this.state.title, this.state.lat, this.state.lang)
     }
 
     handleDelete() {
@@ -92,9 +95,9 @@ class MapItem extends Component {
             return (
                 <tr className={this.props.sent ? "" : "bg-danger text-white"}>
                     <th scope="row">{this.props.no}</th>
-                    <td>{this.handleInputChange ? this.state.isEdit ? this.state.title : this.props.title  : this.state.title}</td>
-                    <td >{this.state.lat}</td>
-                    <td>{this.state.lang}</td>
+                    <td>{this.props.title}</td>
+                    <td >{this.props.lat}</td>
+                    <td>{this.props.lang}</td>
 
 
                     <td>
@@ -108,9 +111,9 @@ class MapItem extends Component {
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-    updateMaps: (id, title, lat,lang) => dispatch(updateMaps(id, title, lat,lang)),
+    updateMaps: (_id, id, title, lat, lang) => dispatch(updateMaps(_id, id, title, lat, lang)),
     deleteMaps: () => dispatch(deleteMaps(ownProps.id)),
-    resendMaps: (id, title,lat, lang) => dispatch(resendMaps(id, title, lat,lang)),
+    resendMaps: (_id, id, title, lat, lang) => dispatch(resendMaps(_id, id, title, lat, lang)),
 })
 
 export default connect(
