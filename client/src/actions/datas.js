@@ -1,6 +1,6 @@
 import request from './connect';
 
-//login user 
+//add data 
 export const addDataSuccess = (data) => ({
     type: 'ADD_DATA_SUCCESS',
     data
@@ -46,7 +46,7 @@ export const addData = (letter, frequency) => {
         })
     }
 }
-//end login user
+//end add data
 
 //load data 
 export const loadDataSuccess = (data) => ({
@@ -145,3 +145,4 @@ export const resendData = (id, letter, frequency) => {
             });
     }
 }
+//end resend data

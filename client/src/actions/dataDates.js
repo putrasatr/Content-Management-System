@@ -1,6 +1,6 @@
 import request from './connect';
 
-//login user 
+//add data
 export const addDatadateSuccess = (data) => ({
     type: 'ADD_DATA_DATE_SUCCESS',
     data
@@ -46,7 +46,7 @@ export const addDatadate = (letter, frequency) => {
         })
     }
 }
-//end login user
+//end add data
 
 //load data 
 export const loadDatadateSuccess = (data) => ({
@@ -72,7 +72,7 @@ export const loadDatadate = () => {
 //end load data
 
 
-//Edit data 
+//edit data 
 export const updateDatadateSuccess = (data) => ({
     type: 'UPDATE_DATA_DATE_SUCCESS',
     data
@@ -101,7 +101,7 @@ export const updateDatadate = (_id, letter, frequency) => {
         })
     }
 }
-//end update data
+//end edit data
 
 //delete data 
 export const deleteDatadateSuccess = (data) => ({
