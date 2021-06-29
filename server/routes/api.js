@@ -96,7 +96,7 @@ router.post('/data', verifyToken, function (req, res, next) {
 
 });
 
-router.get('/data', verifyToken, function (req, res, next) {
+router.get('/data',verifyToken,  function (req, res, next) {
     Datas.find(
         {}).exec(function (err, data) {
             res.status(200).json({
@@ -145,7 +145,7 @@ router.post('/dataDate', verifyToken, function (req, res, next) {
     })
 });
 
-router.get('/dataDate', verifyToken, function (req, res, next) {
+router.get('/dataDate',verifyToken,  function (req, res, next) {
     DataDates.find({})
         .exec(function (err, data) {
             res.status(200).json({

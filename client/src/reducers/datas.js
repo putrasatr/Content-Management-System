@@ -60,7 +60,6 @@ const datas = (state = [], action) => {
         case 'UPDATE_DATA':
             return state.map(item => {
                 if (item._id === action._id) {
-                    console.log("updt di rdc",item.id,action.id)
                     return (
                         {
                             id: item.id,    
